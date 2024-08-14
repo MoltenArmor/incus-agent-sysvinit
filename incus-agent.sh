@@ -12,7 +12,7 @@
 
 set -ue
 
-SETUP_SCRIPT=/lib/init/incus-agent-setup
+SETUP_SCRIPT=/usr/local/bin/incus-agent-setup
 DAEMON=/run/incus_agent/incus-agent
 NAME=incus-agent
 PIDFILE=/run/incus_agent/incus-agent.pid

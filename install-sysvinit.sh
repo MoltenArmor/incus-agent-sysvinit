@@ -1,10 +1,10 @@
 #!/bin/sh
 set -ue
 
-[ -x /etc/init.d/incus-agent ] && [ -x /lib/init/incus-agent-setup ] && exit 0
+[ -x /etc/init.d/incus-agent ] && [ -x /usr/local/bin/incus-agent-setup ] && exit 0
 
 if [ "$(id -u)" -ne 0 ]; then
-    printf '%s\n' 'Please run as root!'
+    printf '%s\n' "Please run as root!"
     exit 127
 fi
 
@@ -23,7 +23,7 @@ install_sysvinit_files() {
     cp -f incus-agent.sh /etc/init.d/incus-agent
     mkdir /mnt/.incus-agent
     mount_9p /mnt/.incus-agent || mount_cdrom /mnt/.incus-agent || return 1
-    cp -f /mnt/.incus-agent/systemd/incus-agent-setup /lib/init/
+    cp -f /mnt/.incus-agent/systemd/incus-agent-setup /usr/local/bin/
     insserv -v incus-agent
 }
 
