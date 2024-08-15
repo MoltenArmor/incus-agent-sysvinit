@@ -21,34 +21,34 @@ WORKDIR=/run/incus_agent
 . /lib/lsb/init-functions
 
 # Exit if incus-agent can not be found.
-[ -x "${SETUP_SCRIPT}" ] || exit 0
+[ -x "${SETUP_SCRIPT}" ] || [ -x "${DAEMON}" ] || exit 0
 
 # Exit if VSock does not exist.
 if !  [ -e "/dev/virtio-ports/org.linuxcontainers.incus" ]; then
-   if ! [ -e "/dev/virtio-ports/org.linuxcontainers.lxd" ]; then
-       exit 0
-   fi
+    if ! [ -e "/dev/virtio-ports/org.linuxcontainers.lxd" ]; then
+        exit 0
+    fi
 fi
 
 case "$1" in
-   start)
-       $SETUP_SCRIPT
-       start-stop-daemon --start --quiet --oknodo --background --exec "$DAEMON" --pidfile "$PIDFILE" --make-pidfile --chdir "$WORKDIR" -- "$@"
-       ;;
-   stop)
-       killproc -p "$PIDFILE" "$DAEMON"
-       ;;
-   status)
-       status_of_proc -p "$PIDFILE" "$DAEMON" "$NAME"
-       ;;
-   restart|reload|force-reload)
-       stop
-       start
-       ;;
-   *)
-       printf '%s\n' "Usage: $0 {start|stop|restart|force-reload}" 1>&2
-       exit 1
-       ;;
+    start)
+        $SETUP_SCRIPT
+        start-stop-daemon --start --quiet --oknodo --background --exec "$DAEMON" --pidfile "$PIDFILE" --make-pidfile --chdir "$WORKDIR" -- "$@"
+        ;;
+    stop)
+        killproc -p "$PIDFILE" "$DAEMON"
+        ;;
+    status)
+        status_of_proc -p "$PIDFILE" "$DAEMON" "$NAME"
+        ;;
+    restart|reload|force-reload)
+        stop
+        start
+        ;;
+    *)
+        printf '%s\n' "Usage: $0 {start|stop|restart|force-reload}" 1>&2
+        exit 1
+        ;;
 esac
 
 exit 0
