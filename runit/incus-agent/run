@@ -1,0 +1,17 @@
+#!/bin/sh
+exec 2>&1
+
+SETUP_SCRIPT=/usr/local/bin/incus-agent-setup
+DAEMON=/run/incus_agent/incus-agent
+WORKDIR=/run/incus_agent
+
+[ -x "${SETUP_SCRIPT}" ] || [ -x "${DAEMON}" ] || exit 127
+
+if !  [ -e "/dev/virtio-ports/org.linuxcontainers.incus" ]; then
+    if ! [ -e "/dev/virtio-ports/org.linuxcontainers.lxd" ]; then
+        exit 127
+    fi
+fi
+
+$SETUP_SCRIPT
+cd "${WORKDIR}" && exec "${DAEMON}"

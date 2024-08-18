@@ -33,7 +33,7 @@ fi
 case "$1" in
     start)
         $SETUP_SCRIPT
-        start-stop-daemon --start --quiet --oknodo --background --exec "$DAEMON" --pidfile "$PIDFILE" --make-pidfile --chdir "$WORKDIR" -- "$@"
+        start-stop-daemon --start --quiet --oknodo --background --exec "$DAEMON" --pidfile "$PIDFILE" --make-pidfile --chdir "$WORKDIR"
         ;;
     stop)
         killproc -p "$PIDFILE" "$DAEMON"
