@@ -18,9 +18,9 @@ mount_9p() {
 }
 
 install_sysvinit_files() {
-    chown 0:0 incus-agent.sh
-    chmod 755 incus-agent.sh
-    cp -f incus-agent.sh /etc/init.d/incus-agent
+    cp -f etc/init.d/incus-agent /etc/init.d/incus-agent
+    chown -R 0:0 /etc/init.d/incus-agent
+    chmod 755 /etc/init.d/incus-agent
     mkdir /mnt/.incus-agent
     mount_9p /mnt/.incus-agent || mount_cdrom /mnt/.incus-agent || return 1
     cp -f /mnt/.incus-agent/systemd/incus-agent-setup /usr/local/bin/
@@ -31,9 +31,8 @@ if (grep -qF "sysvinit" /sbin/init); then
     install_sysvinit_files || true
     umount -l /mnt/.incus-agent && rmdir /mnt/.incus-agent
 else
-    echo "Unsupported init system!"
+    printf '%s\n' "Unsupported init system!"
 fi
 
-echo ""
-echo "Incus agent has been installed, reboot to confirm setup."
+printf '\n%s\n' "Incus agent has been installed, reboot to confirm setup."
 

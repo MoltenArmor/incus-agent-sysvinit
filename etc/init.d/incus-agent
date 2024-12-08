@@ -1,0 +1,82 @@
+#!/bin/sh -ue
+
+### BEGIN INIT INFO
+# Short-Description:    Incus - agent
+# Description:          Incus - agent
+# Provides:             incus-agent
+# Required-Start:       $remote_fs
+# Required-Stop:        $remote_fs
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+### END INIT INFO
+
+SETUP_SCRIPT=/usr/local/bin/incus-agent-setup
+DAEMON=/run/incus_agent/incus-agent
+NAME=incus-agent
+DESC='Incus - agent'
+PIDFILE=/run/incus_agent/incus-agent.pid
+WORKDIR=/run/incus_agent
+
+# Import log_* functions.
+. /lib/lsb/init-functions
+
+# Exit if incus-agent can not be found.
+[ -x "${SETUP_SCRIPT}" ] || [ -x "${DAEMON}" ] || exit 0
+
+# Exit if VSock does not exist.
+if !  [ -e "/dev/virtio-ports/org.linuxcontainers.incus" ]; then
+    if ! [ -e "/dev/virtio-ports/org.linuxcontainers.lxd" ]; then
+        exit 0
+    fi
+fi
+
+case "$1" in
+    start)
+        "${SETUP_SCRIPT}"
+        if start-stop-daemon -m --start --quiet --pidfile "${PIDFILE}" \
+            --exec "${DAEMON}" --background --chdir "${WORKDIR}" > /dev/null 2>&1; then
+            log_success_msg
+        else
+            if start-stop-daemon --test -m --start --quiet --pidfile "${PIDFILE}" \
+                --exec "${DAEMON}" --background --chdir "${WORKDIR}" > /dev/null 2>&1; then
+                log_failure_msg
+                exit 1
+            else
+                log_failure_msg " already running"
+                exit 1
+            fi
+        fi
+
+        exit 0
+        ;;
+    stop)
+        printf '%s' "Stopping ${DESC}: ${NAME}"
+        if start-stop-daemon --stop --quiet --pidfile "${PIDFILE}" \
+            --exec "${DAEMON}" --retry 10; then
+            log_success_msg
+        else
+            if start-stop-daemon --test -m --start --quiet --pidfile "${PIDFILE}" \
+                --exec "${DAEMON}" --background --chdir "${WORKDIR}" >/dev/null 2>&1; then
+                log_failure_msg " not running"
+                exit 0
+            else
+                log_failure_msg
+                exit 1
+            fi
+        fi
+
+        exit 0
+        ;;
+    status)
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
+        ;;
+    restart|force-reload)
+        "$0" stop
+        exec "$0" start
+        ;;
+    *)
+        printf '%s\n' "Usage: $0 {start|stop|restart|force-reload}" 1>&2
+        exit 1
+        ;;
+esac
+
