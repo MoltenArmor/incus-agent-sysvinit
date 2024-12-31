@@ -56,7 +56,7 @@ case "$1" in
             log_success_msg
         else
             if start-stop-daemon --test -m --start --quiet --pidfile "${PIDFILE}" \
-                --exec "${DAEMON}" --background --chdir "${WORKDIR}" >/dev/null 2>&1; then
+                --exec "${DAEMON}" --background --chdir "${WORKDIR}" > /dev/null 2>&1; then
                 log_failure_msg " not running"
                 exit 0
             else
