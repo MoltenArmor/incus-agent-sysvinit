@@ -24,7 +24,7 @@ WORKDIR=/run/incus_agent
 [ -x "${SETUP_SCRIPT}" ] || [ -x "${DAEMON}" ] || exit 0
 
 # Exit if VSock does not exist.
-if !  [ -e "/dev/virtio-ports/org.linuxcontainers.incus" ]; then
+if ! [ -e "/dev/virtio-ports/org.linuxcontainers.incus" ]; then
     if ! [ -e "/dev/virtio-ports/org.linuxcontainers.lxd" ]; then
         exit 0
     fi
@@ -70,7 +70,7 @@ case "$1" in
     status)
         status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
         ;;
-    restart|force-reload)
+    restart | force-reload)
         "$0" stop
         exec "$0" start
         ;;
@@ -79,4 +79,3 @@ case "$1" in
         exit 1
         ;;
 esac
-

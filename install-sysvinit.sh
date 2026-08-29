@@ -35,4 +35,3 @@ else
 fi
 
 printf '\n%s\n' "Incus agent has been installed, reboot to confirm setup."
-
